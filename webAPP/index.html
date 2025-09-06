@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/webapp/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="flutter_api_project">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  
+  <!-- Mobile viewport settings -->
+  <meta name="viewport" content="width=device-width, initial-scale=0.7, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>"/>
+
+  <title>Quản lý trạm cân</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Thêm file cấu hình API URL -->
+  <script src="config.js"></script>
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-width: 320px; /* Giảm chiều rộng tối thiểu để phù hợp với di động */
+      overflow-x: auto; /* Hiển thị thanh cuộn ngang khi cần */
+      -webkit-overflow-scrolling: touch; /* Cuộn mượt hơn trên iOS */
+      overscroll-behavior: none; /* Ngăn chặn "pull-to-refresh" */
+      position: fixed; /* Giúp ổn định trên iOS */
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Hiển thị thanh cuộn trên tất cả trình duyệt */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    /* Cải thiện dialog chọn ngày tháng */
+    .modal-dialog-datepicker {
+      max-width: 90vw !important; 
+      max-height: 80vh !important;
+      margin: auto !important;
+    }
+    
+    /* CSS chung cho DatePicker */
+    .date-picker-dialog {
+      font-size: 16px !important;
+    }
+    
+    /* Điều chỉnh các nút trong DatePicker */
+    button[role="button"] {
+      padding: 8px !important;
+      margin: 4px !important;
+      min-width: unset !important;
+    }
+    
+    /* Giảm khoảng cách giữa các phần tử */
+    .date-picker-header {
+      padding: 8px !important;
+      margin-bottom: 0 !important;
+    }
+    
+    /* Điều chỉnh kích thước bảng ngày */
+    div[role="dialog"] table {
+      border-spacing: 2px !important;
+    }
+    
+    /* Khi xoay ngang màn hình */
+    @media (orientation: landscape) {
+      /* Làm cho bảng chọn ngày rộng hơn và rõ ràng hơn */
+      table.calendar-table {
+        width: 100% !important;
+        font-size: 90% !important; /* Giảm kích thước chữ */
+      }
+      
+      /* Điều chỉnh kích thước ô chọn ngày */
+      td.calendar-day {
+        padding: 5px !important;
+        min-width: 30px !important;
+        height: 30px !important;
+      }
+      
+      /* Phân chia bố cục ngày chọn thành 2 cột khi ở chế độ landscape */
+      .datepicker-container {
+        display: flex !important;
+        flex-direction: row !important;
+      }
+      
+      .datepicker-header {
+        min-width: 30% !important;
+      }
+      
+      .calendar-container {
+        min-width: 70% !important;
+      }
+      
+      /* Điều chỉnh dialog ngày cho landscape mode */
+      .date-picker-dialog {
+        max-height: 90vh !important;
+        max-width: 90vw !important;
+        transform: scale(0.8) !important;
+      }
+      
+      /* Điều chỉnh các nút trong dialog */
+      .date-picker-button {
+        padding: 6px 10px !important;
+        font-size: 14px !important;
+      }
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+    }
+    
+    /* Hỗ trợ Firefox */
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+    }
+    
+    /* Media query cho desktop */
+    @media screen and (min-width: 768px) {
+      body {
+        min-width: 770px; /* Áp dụng chiều rộng tối thiểu cho desktop */
+      }
+    }
+    
+    #loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    
+    flt-glass-pane {
+      min-width: 320px !important; /* Giảm chiều rộng tối thiểu */
+    }
+    
+    /* Media query cho desktop */
+    @media screen and (min-width: 768px) {
+      flt-glass-pane {
+        min-width: 770px !important; /* Áp dụng cho desktop */
+      }
+    }
+  </style>
+  
+  <!-- Script ẩn thanh địa chỉ khi cuộn và cải thiện dialog chọn ngày -->
+  <script>
+    // Ẩn thanh địa chỉ khi trang web đã tải xong
+    window.addEventListener('load', function() {
+      // Cuộn xuống 1px để ẩn thanh địa chỉ
+      setTimeout(function() {
+        window.scrollTo(0, 1);
+      }, 100);
+      
+      // Xử lý sự kiện resize (khi thanh địa chỉ ẩn/hiện)
+      window.addEventListener('resize', function() {
+        setTimeout(function() {
+          window.scrollTo(0, 1);
+        }, 100);
+      });
+      
+      // Cải thiện dialog chọn ngày tháng
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+            for (let i = 0; i < mutation.addedNodes.length; i++) {
+              const node = mutation.addedNodes[i];
+              
+              // Kiểm tra nếu dialog chọn ngày được thêm vào DOM
+              if (node.nodeType === 1) { // ELEMENT_NODE
+                if (node.querySelector && (
+                    node.querySelector('.calendar-table') || 
+                    node.classList.contains('modal-dialog') || 
+                    node.querySelector('.datepicker'))) {
+                  
+                  // Áp dụng lớp CSS cho dialog và container
+                  node.classList.add('modal-dialog-datepicker');
+                  
+                  // Kiểm tra nếu đang ở chế độ xoay ngang
+                  const isLandscape = window.innerWidth > window.innerHeight;
+                  
+                  if (isLandscape) {
+                    // Tìm các thành phần của date picker và áp dụng lớp
+                    const datePickerElements = node.querySelectorAll('.calendar-table td, .calendar-header');
+                    if (datePickerElements.length > 0) {
+                      for (let j = 0; j < datePickerElements.length; j++) {
+                        datePickerElements[j].style.fontSize = '110%';
+                        datePickerElements[j].style.padding = '8px';
+                      }
+                    }
+                    
+                    // Làm cho dialog rộng hơn và căn giữa
+                    node.style.maxWidth = '90vw';
+                    node.style.maxHeight = '80vh';
+                    node.style.width = 'auto';
+                    node.style.margin = 'auto';
+                  }
+                }
+              }
+            }
+          }
+        });
+      });
+      
+      // Cấu hình observer để theo dõi toàn bộ DOM
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    });
+  </script>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

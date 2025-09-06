@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+venv/
+ENV/
+env/
+*.sqlite3
+*.db
+*.log
+*.pot
+*.mo
+*.migrations/
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flutter/Dart (for webAPP)
+webAPP/build/
+webAPP/.dart_tool/
+webAPP/.packages
+webAPP/.flutter-plugins
+webAPP/.flutter-plugins-dependencies
+webAPP/.idea/
+webAPP/.metadata
+webAPP/pubspec.lock
+
+# Misc
+*.bak
+*.swp
+*.swo
+*.tmp
+*.orig
+
+# Node
+node_modules/
+
+# Binaries
+*.exe
+*.msi
+*.bat
+*.vbs
+
+# Picture storage (if not needed in repo)
+!webAPI/
+!webAPP/
