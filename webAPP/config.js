@@ -1,6 +1,6 @@
 // Cấu hình URL API cho ứng dụng web
 window.env = {
-  apiBaseUrl: 'http://127.0.0.1:8000' // URL mặc định cho môi trường development
+  apiBaseUrl: 'http://thongtestnamloc.duckdns.org:8000' // URL mặc định cho môi trường development
 };
 
 // Helper function để lấy image URL
